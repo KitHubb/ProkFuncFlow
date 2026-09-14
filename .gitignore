@@ -1,0 +1,16 @@
+.nextflow/
+.nextflow.log*
+work/
+results/
+logs/
+inputs/
+*.sif
+__pycache__/
+*.pyc
+
+!tests/fixtures/
+!tests/fixtures/**
+
+report-*.html
+timeline-*.html
+dag-*.html

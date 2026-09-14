@@ -1,0 +1,11 @@
+quality:
+  tool: checkm2
+  version: 1.0.2
+taxonomy:
+  tool: gtdbtk
+  version: 2.6.1
+  release: 226
+datasets:
+  allowed: [Bosanjin, SMGC, ELSG, External, UHGC]
+genome_types:
+  allowed: [MAG, isolate_reference, type_strain, other_reference]
