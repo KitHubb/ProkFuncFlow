@@ -1,10 +1,11 @@
 # Active task
 
-- objective: implement and verify C00-C02 with a four-genome smoke test
-- run_id: `smoke_c00_c02_batch`
-- completed checkpoints: C00 pass, C01 pass, C02 pass
-- input manifest SHA-256: `09813e2605833fc6f4536d452fd8e1a9885952e96cb348715391b2dbaebf0dad`
-- validation: 4 unique FASTAs; 4 CheckM2 rows; 4 GTDB-Tk r226 outcomes; zero unclassified/tool failures
+- objective: locate and pin dRep, implement C04, and connect validated representatives to downstream DSL2 modules
+- run_id: `smoke_drep_params`
+- completed checkpoints: C00-C04 implemented; focused C04 smoke passed
+- dRep image: `/data/software/singularity/drep_3.5.0--pyhdfd78af_0.sif`
+- image SHA-256: `6ccf7812e2bb78cde2532b7a5df689a2ff1c2c7a178aa010dd1a2e94ccab0b4d`
+- validation: 4 C03 genomes accounted for; 3 clusters; 3 unique representatives; Wdb/output agreement
 - active jobs: none
-- known limitation: smoke External row lacks curated genome type/accession columns and is conservatively normalized as `other_reference`/`NA`
-- next action: review diff, then implement C03 inclusion policy and freeze
+- known limitation: no full production launch was performed; medium-specific gapseq filling and C08 remain unresolved
+- next action: production launch only with a new immutable run ID after operator review

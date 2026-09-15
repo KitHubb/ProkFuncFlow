@@ -18,6 +18,7 @@ process C00_AUDIT {
       --analysis-config '${analysis_config}' --project-dir '${projectDir}' --run-id '${params.run_id}' \
       --outdir '${params.outdir}' --checkm2-container '${params.checkm2_container}' \
       --gtdbtk-container '${params.gtdbtk_container}' \
+      --drep-container '${params.drep_container}' \
       --checkm2-db '${params.checkm2_db}' --gtdbtk-db '${params.gtdbtk_db}' \
       --environment environment.json --containers container_checksums.tsv \
       --versions software_versions.tsv --checkpoint C00.json

@@ -160,7 +160,7 @@ Apply filters in the accepted order: completeness, contamination, genus, then UH
 
 Run MAGs and references together with `--genomeInfo`; never use `--ignoreGenomeQuality`. Validate cluster membership, representative uniqueness, ANI/alignment parameters, and complete mapping back to the frozen C03 manifest.
 
-A dRep container or executable is not yet included in the supplied image set. Locate and pin it during C00 implementation; do not silently use an unversioned host executable.
+Implementation status (2026-09-15): pinned dRep 3.5.0 in `/data/software/singularity/drep_3.5.0--pyhdfd78af_0.sif` (SHA-256 `6ccf7812e2bb78cde2532b7a5df689a2ff1c2c7a178aa010dd1a2e94ccab0b4d`) and validated fastANI 1.33. Do not silently use an unversioned host executable.
 
 ### C05 — Prokka annotation
 
@@ -253,7 +253,6 @@ Accepted decisions:
 Resolve before the affected production stage:
 
 - exact CheckM2 database release identifier and immutable manifest;
-- pinned dRep executable/container;
 - authorized versioned KEGG module/reaction definition source;
 - full gapseq self-test and medium definitions;
 - accepted biological clade map and replicate eligibility;

@@ -14,3 +14,4 @@ __pycache__/
 report-*.html
 timeline-*.html
 dag-*.html
+trace-*.txt

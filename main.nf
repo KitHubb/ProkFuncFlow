@@ -6,6 +6,7 @@ include { CHECKM2 } from './modules/local/checkm2'
 include { GTDBTK_BATCH } from './modules/local/gtdbtk_batch'
 include { VALIDATE_C02 } from './modules/local/c02_validate'
 include { INCLUSION_FILTER } from './modules/local/inclusion_filter'
+include { DREP } from './modules/local/drep'
 include { PROKKA } from './modules/local/prokka'
 include { PANGENOME_FUNCTION } from './subworkflows/local/pangenome_function'
 include { GENOME_METABOLISM } from './subworkflows/local/genome_metabolism'
@@ -39,10 +40,12 @@ workflow {
     VALIDATE_C02(VALIDATE_MANIFEST.out.manifest, checkm_files, gtdb_files)
     INCLUSION_FILTER(VALIDATE_C02.out.table)
 
+    drep_fastas = INCLUSION_FILTER.out.manifest.splitCsv(header:true, sep:'\t')
+        .map { row -> file(row.staged_fasta, checkIfExists:true) }.collect()
+    DREP(INCLUSION_FILTER.out.manifest, drep_fastas)
+
     if (params.run_downstream) {
-        if (!params.representatives_manifest && !params.smoke_skip_drep) error "Downstream production requires --representatives_manifest from validated C04 dRep"
-        reps_source = params.representatives_manifest ? file(params.representatives_manifest, checkIfExists:true) : INCLUSION_FILTER.out.manifest
-        representatives = reps_source.splitCsv(header:true, sep:'\t').map { row ->
+        representatives = DREP.out.representatives.splitCsv(header:true, sep:'\t').map { row ->
             def meta=[genome_id:row.genome_id,dataset:row.dataset,genome_type:row.genome_type,accession:row.accession,sha256:row.sha256]
             tuple(meta,file(row.staged_fasta,checkIfExists:true))
         }
