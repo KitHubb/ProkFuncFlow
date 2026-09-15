@@ -1,0 +1,5 @@
+module_id	name	definition
+SYN001	Ribosome/RNA marker	K02834 K06881
+SYN002	Alternative enzyme marker	K02834,K15986
+SYN003	Complex and optional marker	K02834+K06881 -K99999
+SYN004	Nested alternative complex	(K99998,K02834)+K06881

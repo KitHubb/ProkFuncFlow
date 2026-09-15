@@ -1,11 +1,10 @@
 # Active task
 
-- objective: locate and pin dRep, implement C04, and connect validated representatives to downstream DSL2 modules
-- run_id: `smoke_drep_params`
-- completed checkpoints: C00-C04 implemented; focused C04 smoke passed
-- dRep image: `/data/software/singularity/drep_3.5.0--pyhdfd78af_0.sif`
-- image SHA-256: `6ccf7812e2bb78cde2532b7a5df689a2ff1c2c7a178aa010dd1a2e94ccab0b4d`
-- validation: 4 C03 genomes accounted for; 3 clusters; 3 unique representatives; Wdb/output agreement
+- objective: implement and verify the complete C00-C10 DSL2 workflow
+- completed: C00-C10 code and checkpoint validators; three-representative C05-C10 end-to-end smoke; resume test
+- smoke run: `smoke_e2e_c05_c10`
+- checkpoints: C05, C06, C07, C08, C09, C10 pass
+- C08 smoke definitions: `synthetic-v1` (software test only, not biological interpretation)
+- C09 smoke medium: gapseq 2.1.0 built-in `gut.csv`
 - active jobs: none
-- known limitation: no full production launch was performed; medium-specific gapseq filling and C08 remain unresolved
-- next action: production launch only with a new immutable run ID after operator review
+- production boundary: no full project-data production launch was performed

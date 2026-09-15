@@ -1,0 +1,3 @@
+genome_id	staged_fasta	dataset	genome_type	accession	sha256
+duplicate	/nonexistent/a.fna	SMGC	MAG	NA	NA
+duplicate	/nonexistent/b.fna	SMGC	MAG	NA	NA

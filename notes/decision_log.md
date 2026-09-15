@@ -21,3 +21,13 @@
 - Supply the uniformly computed C02 CheckM2 completeness/contamination values through dRep `--genomeInfo`; do not invoke `--ignoreGenomeQuality`.
 - Require all frozen C03 genomes in Cdb, unique Wdb representatives, and exact agreement between Wdb and `dereplicated_genomes`.
 - The four-genome focused C04 smoke test produced three clusters and three representatives; it is a software validation, not a production analysis.
+
+## 2026-09-15 — Complete C05-C10 implementation
+
+- Gate every stage with validators and C05-C10 JSON checkpoints.
+- Use only threshold-passing Kofam calls for formal module reconstruction; preserve eggNOG as broad annotation evidence.
+- Support nested AND/OR/complex/optional module logic via a versioned input TSV. The bundled definitions are synthetic tests and are never production defaults.
+- Run gapseq gap filling per representative using a named medium and compare draft/gap-filled RDS reaction slots to retain added reactions separately.
+- Treat gapseq transporter table rows as candidates rather than confirmed transport.
+- Disable inferential clade comparison when an accepted map is absent, while still producing descriptive output and inverse-clade-size weights.
+- The three-representative C05-C10 end-to-end smoke and full resume-cache test passed.

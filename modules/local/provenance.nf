@@ -19,7 +19,12 @@ process C00_AUDIT {
       --outdir '${params.outdir}' --checkm2-container '${params.checkm2_container}' \
       --gtdbtk-container '${params.gtdbtk_container}' \
       --drep-container '${params.drep_container}' \
+      --prokka-container '${params.prokka_container}' --panaroo-container '${params.panaroo_container}' \
+      --eggnog-container '${params.eggnog_container}' --kofam-container '${params.kofam_container}' \
+      --gapseq-container '${params.gapseq_container}' \
       --checkm2-db '${params.checkm2_db}' --gtdbtk-db '${params.gtdbtk_db}' \
+      --eggnog-db '${params.eggnog_db}' --kofam-profiles '${params.kofam_profiles}' \
+      --kofam-ko-list '${params.kofam_ko_list}' --gapseq-db '${params.gapseq_db}' \
       --environment environment.json --containers container_checksums.tsv \
       --versions software_versions.tsv --checkpoint C00.json
     """

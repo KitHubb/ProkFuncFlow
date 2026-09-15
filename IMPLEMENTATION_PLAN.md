@@ -259,3 +259,5 @@ Resolve before the affected production stage:
 - local resource estimates after smoke benchmarking.
 
 No production checkpoint should be marked passed while its prerequisite remains unresolved.
+
+Implementation status (2026-09-15): C00-C10 workflow code, validators, checkpoint gates, medium-specific gapseq filling, integrated summaries, synthetic logic fixtures, end-to-end smoke testing, and resume testing are implemented. Production C08 still requires an authorized versioned definition input, and inferential clade analysis remains disabled unless an accepted clade map is supplied.

@@ -1,25 +1,27 @@
 # ProkFuncFlow
 
-Reusable Nextflow DSL2 workflow for uniform Lawsonella genome QC, taxonomy,
-dereplication, pangenome construction, functional annotation, and metabolic
-reconstruction. The main path currently connects C00-C07 and the implemented
-portion of C09, with checkpoint-validated C01-C04 gates.
+Nextflow DSL2 workflow implementing the checkpointed Lawsonella genome analysis from C00 through C10: uniform QC/taxonomy, filtering, dRep, Prokka, Panaroo, eggNOG/Kofam evidence, logical module reconstruction, per-genome gapseq gap filling, and integrated clade-aware summaries.
 
-## Main workflow
+## Production entrypoint
 
 ```bash
 LC_ALL=C nextflow run main.nf -profile singularity,local \
   --manifest /absolute/path/candidate_manifest.tsv \
-  --analysis_config config/analysis.yml --run_id RUN_ID \
-  --outdir /absolute/path/results/RUN_ID --run_downstream true
+  --analysis_config config/analysis.yml \
+  --module_definitions /authorized/versioned/module_definitions.tsv \
+  --module_definitions_version VERSION \
+  --clade_map /absolute/path/clades.tsv \
+  --run_id RUN_ID --outdir /absolute/path/results/RUN_ID \
+  --run_downstream true
 ```
 
-C04 jointly dereplicates the C03-filtered genomes using dRep 3.5.0 and fastANI,
-then passes only validated representatives to Prokka, Panaroo, eggNOG-mapper,
-KofamScan, and per-genome gapseq. Use `-resume` after correcting an interrupted
-task.
+The module-definition TSV requires `module_id`, `name`, and `definition`. Supported operators are whitespace (AND), `+` (complex AND), `,` (alternative OR), `-` (optional), and parentheses. Formal module calls use threshold-passing Kofam evidence; eggNOG pathway fields are retained only as broad annotations.
 
-## Focused C04 smoke test
+The default C09 medium is the gapseq 2.1.0 image's `gut.csv`; override `--gapseq_medium` and `--gapseq_medium_name` for another validated medium. If `--clade_map` is omitted, all representatives are `unassigned` and inferential comparisons are disabled.
+
+## Focused entrypoints
+
+Run C04 from a frozen C03 manifest:
 
 ```bash
 LC_ALL=C nextflow run c04.nf -profile singularity,local \
@@ -27,6 +29,15 @@ LC_ALL=C nextflow run c04.nf -profile singularity,local \
   --run_id smoke_drep --outdir results/smoke_drep
 ```
 
-The four-genome smoke test is structural validation only; it does not mean the
-full project dataset has been analyzed. Production results, work directories,
-databases, and SIF images are not stored in this repository.
+Run C05-C10 from validated C04 outputs:
+
+```bash
+LC_ALL=C nextflow run downstream.nf -profile singularity,local -resume \
+  --representatives_manifest /absolute/path/representative_genomes.tsv \
+  --clusters_manifest /absolute/path/cluster_membership.tsv \
+  --module_definitions /authorized/versioned/module_definitions.tsv \
+  --module_definitions_version VERSION \
+  --run_id RUN_ID --outdir /absolute/path/results/RUN_ID
+```
+
+Every validator writes `checkpoints/C00.json` through `C10.json` only after its acceptance checks pass. Results, work directories, databases, and SIF images are intentionally excluded from Git. The bundled synthetic module definitions are test fixtures only and are not biological results.
