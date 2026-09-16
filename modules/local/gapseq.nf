@@ -1,7 +1,6 @@
 process GAPSEQ_FIND {
  label 'process_large'; tag meta.genome_id
  container params.gapseq_container
- containerOptions "--bind ${params.gapseq_db}:/usr/local/share/gapseq/dat/seq/Bacteria:ro"
  publishDir "${params.outdir}/12_gapseq_genomes", mode:'copy', overwrite:true, saveAs:{ n -> "${meta.genome_id}/evidence/${n}" }
  input: tuple val(meta), path(proteins)
  output: tuple val(meta), path("${meta.genome_id}-all-Reactions.tbl"), path("${meta.genome_id}-all-Pathways.tbl"), emit: found
@@ -15,7 +14,6 @@ process GAPSEQ_FIND {
 process GAPSEQ_TRANSPORT {
  label 'process_large'; tag meta.genome_id
  container params.gapseq_container
- containerOptions "--bind ${params.gapseq_db}:/usr/local/share/gapseq/dat/seq/Bacteria:ro"
  publishDir "${params.outdir}/12_gapseq_genomes", mode:'copy', overwrite:true, saveAs:{ n -> "${meta.genome_id}/evidence/${n}" }
  input: tuple val(meta), path(proteins)
  output: tuple val(meta), path("${meta.genome_id}-Transporter.tbl"), emit: transporters
@@ -29,7 +27,6 @@ process GAPSEQ_TRANSPORT {
 process GAPSEQ_DRAFT {
  label 'process_medium'; tag meta.genome_id
  container params.gapseq_container
- containerOptions "--bind ${params.gapseq_db}:/usr/local/share/gapseq/dat/seq/Bacteria:ro"
  publishDir "${params.outdir}/12_gapseq_genomes", mode:'copy', overwrite:true, saveAs:{ n -> "${meta.genome_id}/models/${n}" }
  input:
  tuple val(meta), path(reactions), path(pathways), path(transporters)

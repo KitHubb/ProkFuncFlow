@@ -1,0 +1,20 @@
+name: tests
+on:
+  push:
+  pull_request:
+jobs:
+  static-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: nf-core/setup-nextflow@v2
+        with:
+          version: '26.04.2'
+      - run: python3 -m unittest discover -s tests -v
+      - run: nextflow config -profile external,docker,local >/dev/null
+      - run: nextflow config -profile external,singularity,local >/dev/null
+      - run: nextflow config -profile server,local >/dev/null

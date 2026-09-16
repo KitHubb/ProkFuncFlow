@@ -21,10 +21,11 @@ process C00_AUDIT {
       --drep-container '${params.drep_container}' \
       --prokka-container '${params.prokka_container}' --panaroo-container '${params.panaroo_container}' \
       --eggnog-container '${params.eggnog_container}' --kofam-container '${params.kofam_container}' \
-      --gapseq-container '${params.gapseq_container}' \
+      --gapseq-container '${params.gapseq_container}' --anvio-container '${params.anvio_container}' \
       --checkm2-db '${params.checkm2_db}' --gtdbtk-db '${params.gtdbtk_db}' \
       --eggnog-db '${params.eggnog_db}' --kofam-profiles '${params.kofam_profiles}' \
       --kofam-ko-list '${params.kofam_ko_list}' --gapseq-db '${params.gapseq_db}' \
+      --anvio-kegg-data '${params.anvio_kegg_data}' \
       --environment environment.json --containers container_checksums.tsv \
       --versions software_versions.tsv --checkpoint C00.json
     """

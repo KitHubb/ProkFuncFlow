@@ -17,7 +17,7 @@ for r in mods:module[r['genome_id']].append(r)
 for r in rxns:rx[r['genome_id']].append(r)
 for r in clusters:
  if r['drep_representative']=='true':cluster[r['genome_id']]=r['drep_cluster']
-fields=['genome_id','dataset','genome_type','clade','clade_weight','drep_cluster','completeness','contamination','genome_size_bp','contig_count','pangenome_clusters','annotated_clusters','complete_modules','incomplete_modules','sequence_reactions','transporter_candidates','gap_filled_reactions']
+fields=['genome_id','dataset','genome_type','clade','clade_weight','drep_cluster','completeness','contamination','genome_size_bp','contig_count','pangenome_clusters','annotated_clusters','complete_modules','near_complete_modules','incomplete_modules','not_detected_modules','sequence_reactions','transporter_candidates','gap_filled_reactions']
 summary=[]
 for r in reps:
  gid=r['genome_id'];m=module[gid];g=rx[gid]
@@ -26,7 +26,7 @@ for r in reps:
   for line in fasta:
    if line.startswith('>'):contigs+=1
    else:size+=len(line.strip())
- summary.append({'genome_id':gid,'dataset':r['dataset'],'genome_type':r['genome_type'],'clade':clades.get(gid,'unassigned'),'clade_weight':0,'drep_cluster':cluster.get(gid,r.get('drep_cluster','NA')),'completeness':r['completeness'],'contamination':r['contamination'],'genome_size_bp':size,'contig_count':contigs,'pangenome_clusters':len(pangenes[gid]),'annotated_clusters':len(annotated[gid]),'complete_modules':sum(x['state']=='complete' for x in m),'incomplete_modules':sum(x['state']=='incomplete' for x in m),'sequence_reactions':sum(x['evidence_class']=='sequence_detected' for x in g),'transporter_candidates':sum(x['evidence_class']=='transporter_candidate' for x in g),'gap_filled_reactions':sum(x['evidence_class']=='gap_filled' for x in g)})
+ summary.append({'genome_id':gid,'dataset':r['dataset'],'genome_type':r['genome_type'],'clade':clades.get(gid,'unassigned'),'clade_weight':0,'drep_cluster':cluster.get(gid,r.get('drep_cluster','NA')),'completeness':r['completeness'],'contamination':r['contamination'],'genome_size_bp':size,'contig_count':contigs,'pangenome_clusters':len(pangenes[gid]),'annotated_clusters':len(annotated[gid]),'complete_modules':sum(x['state']=='complete' for x in m),'near_complete_modules':sum(x['state']=='near_complete' for x in m),'incomplete_modules':sum(x['state']=='incomplete' for x in m),'not_detected_modules':sum(x['state']=='not_detected' for x in m),'sequence_reactions':sum(x['evidence_class']=='sequence_detected' for x in g),'transporter_candidates':sum(x['evidence_class']=='transporter_candidate' for x in g),'gap_filled_reactions':sum(x['evidence_class']=='gap_filled' for x in g)})
 by=defaultdict(list)
 for r in summary:by[r['clade']].append(r)
 for r in summary:r['clade_weight']=1.0/len(by[r['clade']])

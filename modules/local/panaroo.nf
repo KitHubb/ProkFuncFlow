@@ -11,8 +11,7 @@ process PANAROO {
  path 'C06.json', emit: checkpoint
  script:
  """
- export PATH=/opt/conda/bin:\$PATH
- /opt/conda/bin/panaroo -i ${gffs.join(' ')} -o panaroo --clean-mode strict \
+ ${params.panaroo_executable} -i ${gffs.join(' ')} -o panaroo --clean-mode strict \
   --remove-invalid-genes --threads ${task.cpus}
  test -s panaroo/gene_presence_absence.csv
  python3 ${projectDir}/bin/extract_panaroo_representatives.py \

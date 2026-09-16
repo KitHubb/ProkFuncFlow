@@ -1,7 +1,6 @@
 process KOFAMSCAN {
  label 'process_large'; tag params.run_id
  container params.kofam_container
- containerOptions "--bind ${params.kofam_profiles}:${params.kofam_profiles}:ro,${params.kofam_ko_list}:${params.kofam_ko_list}:ro"
  publishDir "${params.outdir}/09_kofam", mode:'copy', overwrite:true
  input: path proteins
  output: path 'kofam.detail.tsv', emit: detail

@@ -13,7 +13,10 @@ process CHECKM2 {
     script:
     """
     mkdir input
-    cp -L '${fasta}' 'input/${meta.genome_id}.fna'
+    case '${fasta}' in
+      *.gz) gzip -cd '${fasta}' > 'input/${meta.genome_id}.fna' ;;
+      *) cp -L '${fasta}' 'input/${meta.genome_id}.fna' ;;
+    esac
     checkm2 predict --threads ${task.cpus} --input input \
       --output-directory checkm2 --database_path '${params.checkm2_db}'
     test -s checkm2/quality_report.tsv

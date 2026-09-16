@@ -13,11 +13,11 @@ def sha(p):
  return h.hexdigest()
 def main():
  p=argparse.ArgumentParser()
- for k in ("analysis-config","run-id","outdir","project-dir","checkm2-container","gtdbtk-container","drep-container","prokka-container","panaroo-container","eggnog-container","kofam-container","gapseq-container","checkm2-db","gtdbtk-db","eggnog-db","kofam-profiles","kofam-ko-list","gapseq-db","environment","containers","versions","checkpoint"): p.add_argument("--"+k,required=True)
+ for k in ("analysis-config","run-id","outdir","project-dir","checkm2-container","gtdbtk-container","drep-container","prokka-container","panaroo-container","eggnog-container","kofam-container","gapseq-container","anvio-container","checkm2-db","gtdbtk-db","eggnog-db","kofam-profiles","kofam-ko-list","gapseq-db","anvio-kegg-data","environment","containers","versions","checkpoint"): p.add_argument("--"+k,required=True)
  a=p.parse_args()
- for x in (a.analysis_config,a.checkm2_container,a.gtdbtk_container,a.drep_container,a.prokka_container,a.panaroo_container,a.eggnog_container,a.kofam_container,a.gapseq_container,a.checkm2_db,a.kofam_ko_list):
+ for x in (a.analysis_config,a.checkm2_container,a.gtdbtk_container,a.drep_container,a.prokka_container,a.panaroo_container,a.eggnog_container,a.kofam_container,a.gapseq_container,a.anvio_container,a.checkm2_db,a.kofam_ko_list):
   if not os.path.isfile(x) or not os.access(x,os.R_OK): raise ValueError(f"unreadable: {x}")
- for x in (a.gtdbtk_db,a.eggnog_db,a.kofam_profiles,a.gapseq_db):
+ for x in (a.gtdbtk_db,a.eggnog_db,a.kofam_profiles,a.gapseq_db,a.anvio_kegg_data):
   if not os.path.isdir(x):raise ValueError(f"database directory missing: {x}")
  meta=os.path.join(a.gtdbtk_db,"metadata","metadata.txt")
  if not os.path.isfile(meta): raise ValueError(f"GTDB metadata missing: {meta}")
@@ -41,23 +41,31 @@ def main():
  gapseq_test=run(["singularity","exec",a.gapseq_container,"gapseq","test"])
  if "Passed tests: 3/3" not in gapseq_test:raise ValueError("gapseq self-test failed")
  versions["gapseq_self_test"]="pass (3/3)"
+ versions["anvio"]=run(["singularity","exec","--bind",f"{a.anvio_kegg_data}:{a.anvio_kegg_data}:ro",a.anvio_container,"/opt/conda/envs/anvioenv/bin/anvi-estimate-metabolism","--version"])
+ anvio_help=run(["singularity","exec",a.anvio_container,"/opt/conda/envs/anvioenv/bin/anvi-estimate-metabolism","--help"])
+ if "module_paths" not in anvio_help or "module_steps" not in anvio_help:raise ValueError("anvi-estimate-metabolism output-mode check failed")
+ modules_dbs=[]
+ for root,dirs,files in os.walk(a.anvio_kegg_data):
+  if "MODULES.db" in files:modules_dbs.append(os.path.join(root,"MODULES.db"))
+ if len(modules_dbs)!=1:raise ValueError("expected one anvio MODULES.db")
+ versions["anvio_modules_db_sha256"]=sha(modules_dbs[0])
  check_install=run(["singularity","exec","--bind","{}:{}:ro".format(a.gtdbtk_db,a.gtdbtk_db),a.gtdbtk_container,"gtdbtk","check_install"],env)
  if "Running install verification" not in check_install: raise ValueError("GTDB-Tk check_install did not run")
  versions["gtdbtk_check_install"]="pass (GTDB r226 integrity and dependencies)"
- if "1.0.2" not in versions["checkm2"] or "2.6.1" not in versions["gtdbtk"] or versions["drep"] != "3.5.0" or "1.33" not in versions["fastani"] or "1.15.6" not in versions["prokka"] or "1.6.0" not in versions["panaroo"] or "2.1.15" not in versions["eggnog_mapper"] or "2.1.0" not in versions["gapseq"]: raise ValueError("pinned version mismatch")
+ if "1.0.2" not in versions["checkm2"] or "2.6.1" not in versions["gtdbtk"] or versions["drep"] != "3.5.0" or "1.33" not in versions["fastani"] or "1.15.6" not in versions["prokka"] or "1.6.0" not in versions["panaroo"] or "2.1.15" not in versions["eggnog_mapper"] or "2.1.0" not in versions["gapseq"] or "v8" not in versions["anvio"]: raise ValueError("pinned version mismatch")
  git={}
  if os.path.isdir(os.path.join(a.project_dir,".git")):
   git={"branch":run(["git","symbolic-ref","--short","HEAD"],cwd=a.project_dir),"head":run(["git","rev-parse","HEAD"],cwd=a.project_dir),"status":run(["git","status","--short"],cwd=a.project_dir)}
   if git["branch"]!="main": raise ValueError("Git branch is not main")
  envout={"status":"pass","disk":shutil.disk_usage(a.outdir)._asdict(),"locales":run(["locale","-a"]),"scheduler":"slurm" if shutil.which("sbatch") else "local","git":git,"gtdb_metadata":meta}
  with open(a.environment,"w") as f:json.dump(envout,f,indent=2,sort_keys=True)
- images=[("checkm2",a.checkm2_container,sha(a.checkm2_container)),("gtdbtk",a.gtdbtk_container,sha(a.gtdbtk_container)),("drep",a.drep_container,sha(a.drep_container)),("prokka",a.prokka_container,sha(a.prokka_container)),("panaroo",a.panaroo_container,sha(a.panaroo_container)),("eggnog_mapper",a.eggnog_container,sha(a.eggnog_container)),("kofamscan",a.kofam_container,sha(a.kofam_container)),("gapseq",a.gapseq_container,sha(a.gapseq_container))]
+ images=[("checkm2",a.checkm2_container,sha(a.checkm2_container)),("gtdbtk",a.gtdbtk_container,sha(a.gtdbtk_container)),("drep",a.drep_container,sha(a.drep_container)),("prokka",a.prokka_container,sha(a.prokka_container)),("panaroo",a.panaroo_container,sha(a.panaroo_container)),("eggnog_mapper",a.eggnog_container,sha(a.eggnog_container)),("kofamscan",a.kofam_container,sha(a.kofam_container)),("gapseq",a.gapseq_container,sha(a.gapseq_container)),("anvio",a.anvio_container,sha(a.anvio_container))]
  with open(a.containers,"w") as f:
   f.write("tool\tpath\tsha256\n")
   for row in images:f.write("\t".join(row)+"\n")
  with open(a.versions,"w") as f:
   f.write("tool\tversion_output\n")
   for k,v in versions.items():f.write(f"{k}\t{v.replace(chr(10),' | ')}\n")
- cp={"checkpoint":"C00","status":"pass","run_id":a.run_id,"timestamp":datetime.now(timezone.utc).isoformat(),"command":"C00_AUDIT","input_checksums":{"analysis_config":sha(a.analysis_config)},"container_checksums":{x[0]:x[2] for x in images},"database_versions":{"gtdb":"r226","checkm2_database":a.checkm2_db,"eggnog":"5.0.2","kofam_profiles":a.kofam_profiles,"kofam_ko_list":a.kofam_ko_list,"gapseq_sequence_db":"1.5"}}
+ cp={"checkpoint":"C00","status":"pass","run_id":a.run_id,"timestamp":datetime.now(timezone.utc).isoformat(),"command":"C00_AUDIT","input_checksums":{"analysis_config":sha(a.analysis_config)},"container_checksums":{x[0]:x[2] for x in images},"database_versions":{"gtdb":"r226","checkm2_database":a.checkm2_db,"eggnog":"5.0.2","kofam_profiles":a.kofam_profiles,"kofam_ko_list":a.kofam_ko_list,"gapseq_sequence_db":"1.5","anvio_kegg_data":a.anvio_kegg_data,"anvio_modules_db_sha256":versions["anvio_modules_db_sha256"]}}
  with open(a.checkpoint,"w") as f:json.dump(cp,f,indent=2,sort_keys=True)
 if __name__=="__main__":main()

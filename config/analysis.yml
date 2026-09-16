@@ -9,3 +9,18 @@ datasets:
   allowed: [Bosanjin, SMGC, ELSG, External, UHGC]
 genome_types:
   allowed: [MAG, isolate_reference, type_strain, other_reference]
+
+functional_reconstruction:
+  pangenome_annotation:
+    eggnog_role: broad_annotation_only
+    kofam_role: pangenome_cluster_comparison_only
+  genome_kegg:
+    tool: anvio
+    version: 8
+    container: /data/software/singularity/anvio_8.sif
+    kegg_data: /data/Reference/anvio/v8/KEGG
+    primary_module_metric: pathwise_module_completeness
+    primary_complete_threshold: 1.0
+    sensitivity_complete_threshold: 0.75
+    custom_module_parser_production: false
+  gapseq_role: reaction_transporter_model_and_gapfill_evidence

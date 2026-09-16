@@ -170,15 +170,13 @@ Run one task per dRep representative with genus Lawsonella, `--usegenus`, and `-
 
 Validate all Prokka GFFs before a strict Panaroo run with invalid-gene removal. Validate gene-presence/absence tables, representative sequences, graph outputs, and one-to-one cluster/gene/genome projection.
 
-### C07 — eggNOG and KOfam annotation
+### C07 — Pangenome annotation and genome-resolved KOfam
 
-After C06 validation, run eggNOG-mapper and KofamScan independently in parallel on Panaroo representative proteins. Preserve raw evidence, thresholds, scores, e-values, and cluster mappings. EggNOG supplies broad labels only; KOfam supplies formal KO evidence.
+Annotate Panaroo representative proteins with eggNOG-mapper and KofamScan only for pangenome comparison. In an independent lane, run `anvi-run-kegg-kofams` per dRep representative genome using the pinned anvi'o KEGG snapshot. Preserve raw hits, scores, gene IDs, and database hashes.
 
-### C08 — KO, EC, reaction, and KEGG module reconstruction
+### C08 — anvi'o KEGG module reconstruction
 
-Build a versioned evidence model preserving `genome -> gene -> cluster -> evidence -> KO/EC -> reaction -> module`. Implement AND/OR/complex/alternative/optional logic explicitly and report complete, incomplete, and uncertain states with missing required steps.
-
-A licensed/versioned KEGG module-definition source is not present in the supplied list. During implementation, use only an authorized local source or a redistributable compatible representation; stop before downloading or redistributing restricted KEGG content without operator authority.
+Run `anvi-estimate-metabolism` per genome with the exact same anvi'o KEGG data directory used in C07. Preserve pathwise and stepwise completeness, module paths, steps, hits, and warnings. Primary complete calls require pathwise completeness 1.0; 0.75 is a labeled sensitivity threshold. No project-written KEGG parser contributes production calls.
 
 ### C09 — Per-genome gapseq
 

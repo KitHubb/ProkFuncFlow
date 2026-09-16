@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import csv,hashlib,os,subprocess,tempfile,unittest
+import csv,hashlib,os,sqlite3,subprocess,tempfile,unittest
 ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class WorkflowLogicTests(unittest.TestCase):
  def test_module_operators(self):
@@ -10,6 +10,24 @@ class WorkflowLogicTests(unittest.TestCase):
    with open(out) as f:rows=list(csv.DictReader(f,delimiter='\t'))
    states={r['module_id']:r['state'] for r in rows}
    self.assertEqual(states,{'SYN001':'incomplete','SYN002':'complete','SYN003':'incomplete','SYN004':'incomplete'})
+ def test_anvio_validator_strict_and_sensitivity_states(self):
+  with tempfile.TemporaryDirectory() as d:
+   rep=os.path.join(d,'representatives.tsv')
+   with open(rep,'w') as f:f.write('genome_id\nG1\n')
+   header='module\tmodule_name\tmodule_definition\tstepwise_module_completeness\tpathwise_module_completeness\tenzyme_hits_in_module\tgene_caller_ids_in_module\twarnings\n'
+   modules=os.path.join(d,'G1_modules.txt')
+   with open(modules,'w') as f:
+    f.write(header);f.write('M1\tone\tK00001\t1.0\t1.0\tK00001\t1\t\n');f.write('M2\ttwo\tK00002 K00003\t0.5\t0.75\tK00002\t2\t\n')
+   generic='module\tvalue\nM1\tx\n'
+   paths=os.path.join(d,'G1_module_paths.txt');steps=os.path.join(d,'G1_module_steps.txt');hits=os.path.join(d,'G1_hits.txt')
+   for x in (paths,steps,hits):open(x,'w').write(generic)
+   db=os.path.join(d,'G1-CONTIGS.db');sqlite3.connect(db).close()
+   kegg=os.path.join(d,'KEGG');os.makedirs(kegg);mdb=os.path.join(kegg,'MODULES.db')
+   con=sqlite3.connect(mdb);con.execute('create table self (key text, value text)');con.execute('insert into self values (?,?)',('content_hash','fixture-hash'));con.commit();con.close()
+   cmd=['python3',os.path.join(ROOT,'bin/validate_anvio_metabolism.py'),'--representatives',rep,'--modules',modules,'--module-paths',paths,'--module-steps',steps,'--hits',hits,'--contigs-dbs',db,'--kegg-data-dir',kegg,'--strict-threshold','1.0','--sensitivity-threshold','0.75','--modules-output',os.path.join(d,'out.tsv'),'--missing-output',os.path.join(d,'missing.tsv'),'--paths-output',os.path.join(d,'paths.tsv'),'--steps-output',os.path.join(d,'steps.tsv'),'--hits-output',os.path.join(d,'hits.tsv'),'--database-manifest',os.path.join(d,'db.tsv'),'--checkpoint',os.path.join(d,'C08.json'),'--run-id','unit']
+   subprocess.check_call(cmd)
+   with open(os.path.join(d,'out.tsv')) as f:states={r['module_id']:r['state'] for r in csv.DictReader(f,delimiter='\t')}
+   self.assertEqual(states,{'M1':'complete','M2':'near_complete'})
  def test_duplicate_manifest_fixture_fails(self):
   with tempfile.TemporaryDirectory() as d:
    fa=os.path.join(d,'x.fna')

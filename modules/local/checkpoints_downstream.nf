@@ -33,18 +33,3 @@ process BUILD_FUNCTION_EVIDENCE {
   --checkpoint C07.json --run-id '${params.run_id}'
  """
 }
-
-process RECONSTRUCT_MODULES {
- label 'process_small'; tag params.run_id
- publishDir "${params.outdir}", mode:'copy', overwrite:true, saveAs:{ n -> n=='C08.json' ? "checkpoints/${n}" : "11_kegg_modules/${n}" }
- input: path evidence; path definitions
- output:
- path 'module_reconstruction.tsv', emit: modules
- path 'C08.json', emit: checkpoint
- script:
- """
- python3 ${projectDir}/bin/reconstruct_modules.py --evidence '${evidence}' --definitions '${definitions}' \
-  --definition-version '${params.module_definitions_version}' --output module_reconstruction.tsv \
-  --checkpoint C08.json --run-id '${params.run_id}'
- """
-}
